@@ -1,0 +1,138 @@
+import React, { Component } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator} from '@react-navigation/stack';
+import Slide from '../assets/animation/Slide';
+import UserNavigator from './UserNavigator';
+import BusinessNavigator from './BusinessNavigator';
+import Login from '../screens/auth/Login';
+import Select_Type from '../screens/auth/Select_Type';
+import Business_Form from '../screens/auth/Business_Form';
+import Signup from '../screens/auth/Signup';
+import Check_email from "../screens/Forget/check_email";
+import OTP_CODE from "../screens/Forget/otp_code";
+import Change_Password from "../screens/Forget/change_password";
+import AuthContext from '../redux/Context';
+import {isReadyRef, navigationRef} from "../redux/Navigator";
+
+import { useTheme } from '../theme/ThemeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { connect } from 'react-redux';
+import { putUserData, putUserToken } from '../redux/action/LoginAction';
+import { primary } from '../assets/colors';
+import AuthScreen from '../screens/auth/AuthScreen';
+
+
+const Stack = createStackNavigator();
+
+// const {colors} = useTheme();
+
+class Routes extends Component {
+
+    state = {
+        isLoggedin:null,
+        isUser:null,
+    }
+    componentDidMount(){
+        this.check_token();
+    }
+    check_token = async () => {
+        await AsyncStorage.getItem('user',(err,data)=>{
+            if(JSON.parse(data)){
+                const user = JSON.parse(data);
+                if(user.type == "individual"){
+                    this.setState({isUser: true, isLoggedin:true})
+                }
+                else{
+                    this.setState({isUser: false, isLoggedin:true})
+                }
+                // this.setState({});
+                this.props.putUserData(user)
+            }else{
+                this.setState({isLoggedin:false});
+            }
+        });
+        await AsyncStorage.getItem('token', (err, data)=>{
+            if(data){
+                this.props.putUserToken(token)
+            }else{
+                this.setState({isLoggedin:false});
+            }
+        })
+    }
+
+    render(){
+        if(this.state.isLoggedin === null){
+            return <AuthScreen/>
+        }
+        return(
+            // <AuthContext.Provider value={{updateState:this.check_token}}>
+            // {/* <View style={{flex:1,backgroundColor:'black'}}> */}
+            //     <NavigationContainer
+            //         ref={navigationRef}
+            //         onReady={() => {
+            //             isReadyRef.current = true;
+            //         }}
+            //     >
+            //         <Stack.Navigator
+            //             headerMode={null}
+            //         >
+            //         {
+            //             this.state.isLoggedin 
+            //             ?
+            //         <>
+            //             <Stack.Screen options={{ cardStyleInterpolator: Slide }} name="BottomNavigator" component={BottomNavigator}></Stack.Screen>   
+            //         </>
+            //             :
+            //         <>
+            //             <Stack.Screen options={{ cardStyleInterpolator: forSlide }} name="Signup2" component={Signup2}></Stack.Screen>
+            //         </>
+                    
+            //         }
+                    
+            //         </Stack.Navigator>
+            //     </NavigationContainer>
+            //     {/* </View> */}
+            // </AuthContext.Provider>
+
+            <AuthContext.Provider value={{ updateState: this.check_token }} >
+                 <NavigationContainer 
+                    ref={navigationRef}
+                    onReady={()=> {isReadyRef.current = true; }}
+                    theme={{colors:{background:primary}}}>
+                        <Stack.Navigator headerMode="none">
+                           {
+                               this.state.isLoggedin
+                                ?
+                                this.state.isUser?
+                                    <Stack.Screen options={{ cardStyleInterpolator: Slide }} name="UserNavigator" component={UserNavigator}></Stack.Screen>
+                                    :
+                                    <Stack.Screen options={{ cardStyleInterpolator: Slide }} name="BusinessNavigator" component={BusinessNavigator}></Stack.Screen>
+                                :
+                                <>
+                                    <Stack.Screen name="Login" component={Login}></Stack.Screen>
+                                    <Stack.Screen name="Select_Type" component={Select_Type}></Stack.Screen>
+                                    <Stack.Screen name="Business_Form" component={Business_Form}></Stack.Screen>
+                                    <Stack.Screen name="Signup" component={Signup}></Stack.Screen>
+                                    <Stack.Screen name="Check_email" component={Check_email}></Stack.Screen>
+                                    <Stack.Screen name="OTP_CODE" component={OTP_CODE}></Stack.Screen>
+                                    <Stack.Screen name="Change_Password" component={Change_Password}></Stack.Screen>
+                                    {/* <Stack.Screen options={{ cardStyleInterpolator: Slide }} name="UserNavigator" component={UserNavigator}></Stack.Screen>   
+                                    <Stack.Screen options={{ cardStyleInterpolator: Slide }} name="BusinessNavigator" component={BusinessNavigator}></Stack.Screen>  */}
+                                </>
+                           }   
+                        </Stack.Navigator>
+                </NavigationContainer>
+            </AuthContext.Provider>
+           
+        )
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        putUserData: (user) => dispatch(putUserData(user)),
+        putUserToken: (token)=> dispatch(putUserToken(token))
+    }
+}
+export default connect(null,mapDispatchToProps)(Routes);
+// export default Routes;

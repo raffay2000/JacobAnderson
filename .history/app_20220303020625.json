@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "jacobApp",
+    "slug": "jacobApp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon1.png",
+    "facebookScheme":"fb593054675199896",
+    "facebookAppId":"593054675199896",
+    "facebookDisplayName":"LYV",
+    "splash": {
+      "image": "./assets/splash1.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "userInterfaceStyle": "automatic",
+      "bundleIdentifier":"host.exp.exponent",
+      "config":{
+        "googleSignIn":{
+          "reservedClientId":"com.googleusercontent.apps.511567666471-lbm439a1ahcs796ajp31nv7cukc67ero"
+        }
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon1.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package":"com.jacobanderson.events"
+    },
+    "web": {
+      "favicon":"./assets/favicon.png"
+    }
+  }
+}
